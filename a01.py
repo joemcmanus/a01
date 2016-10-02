@@ -21,7 +21,7 @@ import requests
 import time
 import argparse
 
-parser = argparse.ArgumentParser(description='Olympus Air A01 Control Program.\n (C) Joe McManus 2016')
+parser = argparse.ArgumentParser(description='Olympus Air A01 Control Program. (C) Joe McManus 2016')
 parser.add_argument('--pid', help="Create a pid file in /var/run/a01.pid",  action="store_true")
 parser.add_argument('--interval', help="Take pictures at X interval in seconds.", type=int, action="store")
 parser.add_argument('--count', help="Take X pictures", type=int, action="store")
