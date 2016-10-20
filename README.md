@@ -52,3 +52,7 @@ To enable debug messages use the --debug option.
 
 A web based front end to control the Air. 
 ![alt_tag](https://raw.githubusercontent.com/joemcmanus/a01/master/ao1FrontEnd.png)
+
+Current known issue: 
+ Thumbnails don't work. 
+ Intervalometer not implemented in Web UI
