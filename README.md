@@ -48,6 +48,21 @@ To enable debug messages use the --debug option.
     .....
 
 
+To list images use the --getImageList option.
+
+    sazed:a01 joe$ ./a01.py --getImageList
+    PA190001.JPG
+    PA190002.JPG
+    PA190003.JPG
+
+To delete images use the --delImage imageName option. 
+
+    sazed:a01 joe$ ./a01.py --delImage PA190001.JPG
+
+To download images use the --getImage option.
+
+    sazed:a01 joe$ ./a01.py --getImage PA190001.JPG
+
 # a01-flask.py 
 
 A web based front end to control the Air. 
