@@ -17,6 +17,9 @@ This program will enable picture taking via command line on python.
       --pid                Create a pid file in /var/run/a01.pid
       --interval INTERVAL  Take pictures at X interval in seconds.
       --count COUNT        Take X pictures
+      --getImageList       List images on SD card
+      --getImage GETIMAGE  Download image imageName
+      --delImage DELIMAGE  Delete image imageName
       --debug              Enable debug messages
 
 To take one photo just run ./a01.py.
@@ -44,3 +47,7 @@ To enable debug messages use the --debug option.
     <?xml version="1.0"?><result>OK</result>
     .....
 
+
+# a01-flask.py 
+
+A web based front end to control the Air. 
