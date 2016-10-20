@@ -5,6 +5,8 @@ The Olympus Air A01 is a unique camera that is designed around an open platform.
 This repo will hold a collection of scripts to run on the device. 
 More features will be added as I play with this more. 
 
+All of these programs are writte in python if you need any inspiration for creating your OPC code take a look. 
+
 # a01.py
 This program will enable picture taking via command line on python.
 
