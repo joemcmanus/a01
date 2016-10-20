@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # File    : a01.py ; a python app to take picture with the Olympus A01
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.1  10/01/2016 Joe McManus
+# Version : 0.2  10/19/2016 Joe McManus
 # Copyright (C) 2016 Joe McManus
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,11 +20,17 @@
 import requests
 import time
 import argparse
+import re
+from io import BytesIO
+from PIL import Image
 
 parser = argparse.ArgumentParser(description='Olympus Air A01 Control Program. (C) Joe McManus 2016')
 parser.add_argument('--pid', help="Create a pid file in /var/run/a01.pid",  action="store_true")
 parser.add_argument('--interval', help="Take pictures at X interval in seconds.", type=int, action="store")
 parser.add_argument('--count', help="Take X pictures", type=int, action="store")
+parser.add_argument('--getImageList', help="List images on SD card", action="store_true")
+parser.add_argument('--getImage', help="Download image imageName", type=str, action="store")
+parser.add_argument('--delImage', help="Delete image imageName", type=str, action="store")
 parser.add_argument('--debug', help="Enable debug messages", action="store_true")
 
 args=parser.parse_args()
@@ -41,12 +47,24 @@ if args.interval:
 if args.count:
 	print("Taking a total of {} pictures." .  format(args.count))
 
+
+
 def getPage(air, link, headers):
 	getURL=air + link
 	r=requests.get(getURL, headers=headers)
 	if args.debug:
 		print(getURL)
 		print(r.text)
+
+
+def getImage(air, link, filename, headers):
+	getURL=air + link  + "/" + filename
+	r=requests.get(getURL, headers=headers, stream=True)
+	with open(filename, 'wb') as fh: 
+		#i = Image.open(BytesIO(r.content))
+		for chunk in r.iter_content(1024):
+			fh.write(chunk)
+	fh.close()
 
 #The Olympus Air is a DHCP server that gives itself the IP below.
 air='http://192.168.0.10/'
@@ -71,12 +89,36 @@ getPage(air, 'get_state.cgi', headers)
 #Set Live View
 getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
 
+
+if args.getImageList:
+	getURL=air + 'get_imglist.cgi?DIR=/DCIM/100OLYMP'
+	results=requests.get(getURL, headers=headers)
+	results=re.findall("P.\d*.JPG", results.text)
+	for result in results:
+		print(result)
+	quit()
+
+if args.getImage:
+	getImage(air, '/DCIM/100OLYMP', args.getImage, headers)
+	quit()
+
+if args.delImage:
+	getPage(air, 'exec_takemisc.cgi?com=stopliveview', headers)
+	#getPage(air, 'release_allprotect.cgi', headers)
+	getPage(air, 'switch_cameramode.cgi?mode=standalone', headers)
+	getPage(air, 'switch_cameramode.cgi?mode=play', headers)
+	getPage(air, 'switch_cameramode.cgi?mode=playmaintenance', headers)
+	getPage(air, 'exec_erase.cgi?DIR=/DCIM/100OLYMP/' + args.delImage, headers)
+	quit()
+
 #Take one picture and exit
 if not args.count:
 	#Take a picture
 	print("Taking 1 photo.")
 	getPage(air, 'exec_takemotion.cgi?com=newstarttake', headers)
+
 	quit()
+
 
 #Take pics at specified interval
 if args.count: 
