@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # File    : a01.py ; a python app to take picture with the Olympus A01
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.2  10/19/2016 Joe McManus
+# Version : 0.3  10/21/2016 Joe McManus
 # Copyright (C) 2016 Joe McManus
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,6 @@ import requests
 import time
 import argparse
 import re
-from io import BytesIO
-from PIL import Image
 
 parser = argparse.ArgumentParser(description='Olympus Air A01 Control Program. (C) Joe McManus 2016')
 parser.add_argument('--pid', help="Create a pid file in /var/run/a01.pid",  action="store_true")
@@ -30,6 +28,7 @@ parser.add_argument('--interval', help="Take pictures at X interval in seconds."
 parser.add_argument('--count', help="Take X pictures", type=int, action="store")
 parser.add_argument('--getImageList', help="List images on SD card", action="store_true")
 parser.add_argument('--getImage', help="Download image imageName", type=str, action="store")
+parser.add_argument('--getThumb', help="Download thumbnail imageName", type=str, action="store")
 parser.add_argument('--delImage', help="Delete image imageName", type=str, action="store")
 parser.add_argument('--debug', help="Enable debug messages", action="store_true")
 
@@ -91,6 +90,7 @@ getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
 
 
 if args.getImageList:
+	args.debug=True
 	getURL=air + 'get_imglist.cgi?DIR=/DCIM/100OLYMP'
 	results=requests.get(getURL, headers=headers)
 	results=re.findall("P.\d*.JPG", results.text)
@@ -99,7 +99,12 @@ if args.getImageList:
 	quit()
 
 if args.getImage:
+	getPage(air, 'exec_takemisc.cgi?com=stopliveview', headers)
 	getImage(air, '/DCIM/100OLYMP', args.getImage, headers)
+	quit()
+
+if args.getThumb:
+	getPage(air, 'get_thumbnail.cgi?DIR=/DCIM/100OLYMP/' + args.getThumb, headers)
 	quit()
 
 if args.delImage:

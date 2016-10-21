@@ -70,6 +70,21 @@ To download images use the --getImage option.
 A web based front end to control the Air. 
 ![alt_tag](https://raw.githubusercontent.com/joemcmanus/a01/master/ao1FrontEnd.png)
 
+To start run ./a01-flask.py . 
+
+Make sure you are connected to the AIR wifi or you will see the error below. 
+
+    sazed:a01 joe$ ./a01-flask.py
+    Trying to connect to A01
+    ERROR: Unable to reach air at : http://192.168.0.10/
+    ERROR: Make sure you are connected to the Air Wifi. 
+    ERROR: The SSID is something like AIR-A01-MAC
+
+
+Currently you can take pictures, view thumbnails, download images and remove files from the SD card. 
+
+
+
+
 Current known issue: 
- Thumbnails don't work. 
  Intervalometer not implemented in Web UI

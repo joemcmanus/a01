@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # File    : a01.py ; a python app to take picture with the Olympus A01
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.2  10/19/2016 Joe McManus
+# Version : 0.3  10/21/2016 Joe McManus
 # Copyright (C) 2016 Joe McManus
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import requests
 import time
 import argparse
 import re
+import os
 from flask import Flask, render_template, Markup, request, make_response, send_file
 
 def getPage(air, link, headers):
@@ -29,12 +30,17 @@ def getPage(air, link, headers):
 	return(r.text)
 
 def getThumb(air, imageName, headers):
-	getURL=air + "get_thumbnail.cgi?/DCIM/100OLYMP/" + imageName
+	getPage(air, 'switch_cameramode.cgi?mode=standalone', headers)
+	getPage(air, 'switch_cameramode.cgi?mode=play', headers)
+	getURL=air + "get_thumbnail.cgi?DIR=/DCIM/100OLYMP/" + imageName
 	r=requests.get(getURL, headers=headers, stream=True)
 	with open('static/thumbs/' + imageName, 'wb') as fh:
-		for chunk in r.iter_content(64):
+		for chunk in r.iter_content(1024):
 			fh.write(chunk)
 	fh.close()
+	getPage(air, 'switch_cameramode.cgi?mode=standalone', headers)
+	getPage(air, 'switch_cameramode.cgi?mode=rec', headers)
+	getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
 
 def setupConnection():
 	#Try to connect to the A01, if it fails quit
@@ -50,11 +56,18 @@ def setupConnection():
 
 	#set mode
 	print("Setting A01 up for WiFi Control")
+	getPage(air, 'switch_cameramode.cgi?mode=standalone', headers)
 	getPage(air, 'switch_cameramode.cgi?mode=rec', headers)
 
 	#Set Live View
 	getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
 
+	#Next we will create thumbnail and download directories
+	if not os.path.exists('static/thumbs'):
+		os.mkdir('static/thumbs')
+
+	if not os.path.exists('static/images'):
+		os.mkdir('static/images')
 
 app = Flask(__name__)
 
@@ -121,6 +134,13 @@ def clearImages():
 		link='exec_erase.cgi?DIR=/DCIM/100OLYMP/' + result
 		print(getPage(air, link, headers))
 		bodyText=bodyText + "Erasing : " + link + " <br> \n"
+
+		#Delete local files
+		if os.path.isfile('static/thumbs/'+ result):
+			os.remove('static/thumbs/'+ result)
+		if os.path.isfile('static/images/'+ result):
+			os.remove('static/images/'+ result)
+
 	bodyText=Markup(bodyText)
 	getPage(air, 'switch_cameramode.cgi?mode=standalone', headers)
 	getPage(air, 'switch_cameramode.cgi?mode=rec', headers)
@@ -148,7 +168,14 @@ def errorpage(e):
 	bodyText="Oops, something went wrong"
 	return render_template('templatecss.html', bodyText=bodyText) 
 
+@app.after_request
+def add_no_cache(response):
+	response.cache_control.no_cache = True
+	response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	response.headers['Cache-Control'] = 'public, max-age=0'
+	return response
+
 if __name__ == '__main__':
-	app.debug = True
-	app.run(host='0.0.0.0', debug=True, port=80)
+	app.debug = False
+	app.run(host='0.0.0.0', port=80)
 
