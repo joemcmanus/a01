@@ -84,7 +84,6 @@ Make sure you are connected to the AIR wifi or you will see the error below.
 Currently you can take pictures, view thumbnails, download images and remove files from the SD card. 
 
 
-
-
 Current known issue: 
  Intervalometer not implemented in Web UI
+
