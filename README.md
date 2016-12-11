@@ -11,13 +11,14 @@ All of these programs are writte in python if you need any inspiration for creat
 ---
 This is a program that will allow you to control your Olympus Air A01 over WiFi using the Intel Edison with a Sparkfun OLED Block connected. 
 
-![alt_tag](https://raw.githubusercontent.com/joemcmanus/a01/master/ao1FrontEnd.png)
+![alt_tag](https://github.com/joemcmanus/a01/blob/master/edisonBlock.jpg)
 
 Usage: 
-Button A : Takes a picture
-Button B : Takes 5 pictures after waiting 10 seconds 
-Button Up: Connect Edison to Air over WiFi
-Button Down: Connect Edison to regular WiFi network 
+
+    Button A : Takes a picture
+    Button B : Takes 5 pictures after waiting 10 seconds 
+    Button Up: Connect Edison to Air over WiFi
+    Button Down: Connect Edison to regular WiFi network 
 
 For this to work properly you want it to start on boot. To do that copy the a01-edison.service file to /lib/systemd/system. Then run systemctl enable a01-edison . 
 
