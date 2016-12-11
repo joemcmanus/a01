@@ -7,6 +7,21 @@ More features will be added as I play with this more.
 
 All of these programs are writte in python if you need any inspiration for creating your OPC code take a look. 
 
+# a01-edison.py
+---
+This is a program that will allow you to control your Olympus Air A01 over WiFi using the Intel Edison with a Sparkfun OLED Block connected. 
+
+![alt_tag](https://raw.githubusercontent.com/joemcmanus/a01/master/ao1FrontEnd.png)
+
+Usage: 
+Button A : Takes a picture
+Button B : Takes 5 pictures after waiting 10 seconds 
+Button Up: Connect Edison to Air over WiFi
+Button Down: Connect Edison to regular WiFi network 
+
+For this to work properly you want it to start on boot. To do that copy the a01-edison.service file to /lib/systemd/system. Then run systemctl enable a01-edison . 
+
+
 # a01.py
 This program will enable picture taking via command line on python.
 
@@ -83,7 +98,7 @@ Make sure you are connected to the AIR wifi or you will see the error below.
 
 Currently you can take pictures, view thumbnails, download images and remove files from the SD card. 
 
-
 Current known issue: 
  Intervalometer not implemented in Web UI
+
 
