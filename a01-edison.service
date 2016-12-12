@@ -1,0 +1,15 @@
+#Startup file for a01-edison.py 
+#Put file in /lib/systemd/system
+#run systemctl enable a01-edison.service 
+
+[Unit]
+Description=Olympus Air and Intel Edison Controller
+After=multi-user.target
+
+[Service]
+type=oneshot
+WorkingDirectory=/home/root
+ExecStart=/usr/bin/python a01-edison.py
+
+[Install]
+WantedBy=multi-user.target
