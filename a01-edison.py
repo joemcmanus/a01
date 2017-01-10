@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # File    : a01-edison.py ;App to control A01 via Intel Edison
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.1  12/11/2016 
+# Version : 0.2  01/10/2017 
 # Copyright (C) 2016 Joe McManus
 #
 # This program is free software: you can redistribute it and/or modify
@@ -63,7 +63,7 @@ def connectA01():
     sendLCD("AIR Net Discovered: " + str(netNum))
 
     sendLCD("Disconnecting other nets")
-    connect=subprocess.Popen("`wpa_cli list_networks | grep  '^[0-9]' | grep -v AIR | cut -f1` ; do wpa _cli disconnect $loop  ; done" , shell=True, stdout=subprocess.PIPE).stdout.read()
+    connect=subprocess.Popen("for loop in `wpa_cli list_networks | grep  '^[0-9]' | grep -v AIR | cut -f1` ; do wpa_cli disconnect $loop  ; done" , shell=True, stdout=subprocess.PIPE).stdout.read()
     sendLCD(connect)
     sendLCD("Connecting to AIR")
     connect=subprocess.Popen("wpa_cli select_network " + netNum, shell=True, stdout=subprocess.PIPE).stdout.read()
@@ -72,20 +72,35 @@ def connectA01():
         
     sendLCD(connect)
     ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1", shell=True, stdout=subprocess.PIPE).stdout.read()
-    sendLCD("Connected! " + ip) 
-    #check mode
-    sendLCD("Checking Mode")
-    getPage(air, 'get_connectmode.cgi', headers)
-    #set mode
-    sendLCD("Setting Mode")
-    getPage(air, 'switch_cameramode.cgi?mode=rec', headers)
-    #Get status
-    sendLCD("Getting  Mode")
-    getPage(air, 'get_state.cgi', headers)
-    #Set Live View
-    sendLCD("Setting LiveView")
-    getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
-    sendLCD("Ready to take pics.")
+    if ip != "192.168.0.3":
+            sendLCD("Error Connecting. Retry.")
+    else:
+        endLCD("Connected! " + ip) 
+        initA01()
+
+def initA01():
+    ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1", shell=True, stdout=subprocess.PIPE).stdout.read()
+    if ip == "192.168.0.3":
+        #check mode
+        sendLCD("Checking Mode")
+        getPage(air, 'get_connectmode.cgi', headers)
+        #set mode
+        sendLCD("Setting Mode")
+        getPage(air, 'switch_cameramode.cgi?mode=rec', headers)
+        #Get status
+        sendLCD("Getting  Mode")
+        getPage(air, 'get_state.cgi', headers)
+        #Set Live View
+        sendLCD("Setting LiveView")
+        getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
+        sendLCD("Ready to take pics.")
+    else:
+            sendLCD("Error Connecting. Retry.")
+            
+
+def checkA01():
+    ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1", shell=True, stdout=subprocess.PIPE).stdout.read()
+    sendLCD("Current IP:! " + ip) 
 
 def disconnectA01():
     sendLCD("Reconnecting to default net")
@@ -147,6 +162,10 @@ while 1:
                 connectA01()
             if button.read() == 0 and msg == "Down": 
                 disconnectA01()
+            if button.read() == 0 and msg == "Left": 
+                initA01()
+            if button.read() == 0 and msg == "Right": 
+                checkA01()
             if button.read() == 0 and msg == "A": 
                 sendLCD("Taking Pic")
 	        getPage(air, 'exec_takemotion.cgi?com=newstarttake', headers)

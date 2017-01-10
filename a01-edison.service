@@ -10,6 +10,8 @@ After=multi-user.target
 type=oneshot
 WorkingDirectory=/home/root
 ExecStart=/usr/bin/python a01-edison.py
+RestartSec=1s
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
