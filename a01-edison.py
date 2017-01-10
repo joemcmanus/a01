@@ -71,15 +71,15 @@ def connectA01():
         sendLCD("Waiting " + (".")*i)
         
     sendLCD(connect)
-    ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1", shell=True, stdout=subprocess.PIPE).stdout.read()
+    ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1 | tr -d '\n'", shell=True, stdout=subprocess.PIPE).stdout.read()
     if ip != "192.168.0.3":
-            sendLCD("Error Connecting. Retry.")
+        sendLCD("Error Connecting. Retry.")
     else:
-        endLCD("Connected! " + ip) 
+        endLCD("Connected: " + ip) 
         initA01()
 
 def initA01():
-    ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1", shell=True, stdout=subprocess.PIPE).stdout.read()
+    ip=subprocess.Popen("ifconfig wlan0 | grep inet | cut -d':' -f2 | cut -d' ' -f1  | tr -d '\n'", shell=True, stdout=subprocess.PIPE).stdout.read()
     if ip == "192.168.0.3":
         #check mode
         sendLCD("Checking Mode")
@@ -95,7 +95,8 @@ def initA01():
         getPage(air, 'exec_takemisc.cgi?com=startliveview&port=5555', headers)
         sendLCD("Ready to take pics.")
     else:
-            sendLCD("Error Connecting. Retry.")
+        sendLCD("Current IP: " + ip)
+        sendLCD("Error Connecting. Retry.")
             
 
 def checkA01():
